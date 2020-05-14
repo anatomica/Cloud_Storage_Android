@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cloud Storage</string>
+    <string name="tab_text_1">Download</string>
+    <string name="tab_text_2">Cloud Server</string>
+    <string name="about">About</string>
+    <string name="logout">Logout</string>
+    <string name="exit">Exit</string>
+    <string name="auth">Login</string>
+    <string name="registration">Registration</string>
+    <string name="login">Login</string>
+    <string name="AboutApp">About App:</string>
+    <string name="Version">Version 1.2 \nMaxim Fomin © 2019 – 2020 \nAll rights reserved.</string>
+    <string name="sendFile">Send or download file ?</string>
+    <string name="renameFile">Rename file ?</string>
+    <string name="deleteFile">Delete this file ?</string>
+    <string name="sendMod">Send file \'%s\' ?</string>
+    <string name="action">Choose action:</string>
+    <string name="cancel">Cancel</string>
+    <string name="download">Download file \'%s\' ?</string>
+    <string name="function">Function will be added later</string>
+    <string name="notEmpty">Nickname / Login / Password cannot be empty!</string>
+    <string name="nickNotEmpty">Nickname must be without spaces!</string>
+    <string name="success">File received successfully!</string>
+    <string name="successSend">Successfully sent!</string>
+    <string name="help">You cannot send a file from here \nSelect, for example, \nphoto or a document \nfrom the application \'Gallery \'</string>
+    <string name="notSend">You cannot send the folder!</string>
+</resources>
