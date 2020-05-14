@@ -10,7 +10,7 @@
     <string name="registration">Registration</string>
     <string name="login">Login</string>
     <string name="AboutApp">About App:</string>
-    <string name="Version">Version 1.2 \nMaxim Fomin © 2019 – 2020 \nAll rights reserved.</string>
+    <string name="Version">Version 1.3 \nMaxim Fomin © 2019 – 2020 \nAll rights reserved.</string>
     <string name="sendFile">Send or download file ?</string>
     <string name="renameFile">Rename file ?</string>
     <string name="deleteFile">Delete this file ?</string>
