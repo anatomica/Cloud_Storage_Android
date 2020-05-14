@@ -25,4 +25,5 @@
     <string name="successSend">Successfully sent!</string>
     <string name="help">You cannot send a file from here \nSelect, for example, \nphoto or a document \nfrom the application \'Gallery \'</string>
     <string name="notSend">You cannot send the folder!</string>
+    <string name="parentFolder"><![CDATA[Parent Folder -> %s]]></string>
 </resources>

@@ -43,6 +43,7 @@ public class FileService {
             mainActivity.runOnUiThread(this::loginToApp);
             mainActivity.saveLoginPass();
             mainActivity.runOnUiThread(() -> mainActivity.refreshLocalFilesList("path"));
+            TimeUnit.MILLISECONDS.sleep(200);
             mainActivity.runOnUiThread(() -> mainActivity.refreshCloudFilesList());
             System.out.println("Вход выполнен!");
         };
@@ -53,6 +54,7 @@ public class FileService {
         };
         reloadTableCallback = () -> {
             mainActivity.runOnUiThread(() -> mainActivity.reloadLocalTable());
+            TimeUnit.MILLISECONDS.sleep(200);
             mainActivity.runOnUiThread(() -> mainActivity.reloadCloudTable());
             System.out.println("Перерисовано!");
         };
@@ -95,6 +97,7 @@ public class FileService {
             if (fileName != null) {
                 String pathToFile;
                 if (download.equals("Download")) pathToFile = MainActivity.directory + "/" + fileName;
+                else if (fileName.startsWith("/storage")) pathToFile = fileName;
                 else if (fileName.startsWith("/external_files")) pathToFile = directory + fileName.substring(15);
                 else if (fileName.startsWith("/raw")) pathToFile = fileName.substring(4);
                 else {
@@ -112,7 +115,7 @@ public class FileService {
                         ProtocolFiles.progress = 0;
                         System.out.println("Файл успешно передан");
                         messageToService(mainActivity.getString(R.string.successSend));
-                        TimeUnit.MILLISECONDS.sleep(200);
+                        TimeUnit.MILLISECONDS.sleep(300);
                         mainActivity.runOnUiThread(() -> mainActivity.refreshCloudFilesList());
                     }
                 });
@@ -139,7 +142,7 @@ public class FileService {
             }
             if (future.isSuccess()) {
                 System.out.println("Команда на удаление передана!");
-                TimeUnit.MILLISECONDS.sleep(500);
+                TimeUnit.MILLISECONDS.sleep(300);
                 mainActivity.runOnUiThread(() -> mainActivity.refreshCloudFilesList());
             }
         });
@@ -181,7 +184,8 @@ public class FileService {
         mainActivity.loginLayout.setVisibility(View.INVISIBLE);
         mainActivity.tabLayout.setVisibility(View.INVISIBLE);
         mainActivity.viewPagerLayout.setVisibility(View.INVISIBLE);
-        mainActivity.fab.setVisibility(View.INVISIBLE);
+        mainActivity.fabGallery.setVisibility(View.INVISIBLE);
+        mainActivity.fabES.setVisibility(View.INVISIBLE);
     }
 
     public void changeToReg() {
@@ -190,7 +194,8 @@ public class FileService {
         mainActivity.loginLayout.setVisibility(View.INVISIBLE);
         mainActivity.tabLayout.setVisibility(View.INVISIBLE);
         mainActivity.viewPagerLayout.setVisibility(View.INVISIBLE);
-        mainActivity.fab.setVisibility(View.INVISIBLE);
+        mainActivity.fabGallery.setVisibility(View.INVISIBLE);
+        mainActivity.fabES.setVisibility(View.INVISIBLE);
     }
 
     public void changeToLogin() {
@@ -199,7 +204,8 @@ public class FileService {
         mainActivity.loginLayout.setVisibility(View.VISIBLE);
         mainActivity.tabLayout.setVisibility(View.INVISIBLE);
         mainActivity.viewPagerLayout.setVisibility(View.INVISIBLE);
-        mainActivity.fab.setVisibility(View.INVISIBLE);
+        mainActivity.fabGallery.setVisibility(View.INVISIBLE);
+        mainActivity.fabES.setVisibility(View.INVISIBLE);
     }
 
     public void loginToApp() {
@@ -208,7 +214,8 @@ public class FileService {
         mainActivity.loginLayout.setVisibility(View.INVISIBLE);
         mainActivity.tabLayout.setVisibility(View.VISIBLE);
         mainActivity.viewPagerLayout.setVisibility(View.VISIBLE);
-        mainActivity.fab.setVisibility(View.VISIBLE);
+        mainActivity.fabGallery.setVisibility(View.VISIBLE);
+        mainActivity.fabES.setVisibility(View.VISIBLE);
     }
 
     public void messageToService(String message) {

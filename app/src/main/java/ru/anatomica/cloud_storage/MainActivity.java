@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,12 +20,14 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -58,8 +61,10 @@ public class MainActivity extends AppCompatActivity {
     public ConstraintLayout registerLayout;
     public ConstraintLayout loginLayout;
     public ViewPager viewPagerLayout;
-    public FloatingActionButton fab;
+    public FloatingActionButton fabGallery;
+    public FloatingActionButton fabES;
     public TabLayout tabLayout;
+    public ImageView imageView;
 
     public Button exit;
     public Button sendAuth;
@@ -112,20 +117,17 @@ public class MainActivity extends AppCompatActivity {
         viewPagerLayout.setAdapter(sectionsPagerAdapter);
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPagerLayout);
-        fab = findViewById(R.id.fab);
+        fabGallery = findViewById(R.id.fabGallery);
+        fabGallery.setOnClickListener(this::onClickFabGallery);
+        fabES = findViewById(R.id.fabES);
+        fabES.setOnClickListener(this::onClickFabES);
+
         MainActivity.context = getApplicationContext();
-
-        fab.setOnClickListener(view -> {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-        });
-
         mainLayout = findViewById(R.id.activity_main);
         changeLayout = findViewById(R.id.activity_change);
         registerLayout = findViewById(R.id.activity_register);
         loginLayout = findViewById(R.id.activity_login);
+        imageView = findViewById(R.id.imageView);
 
         loginField = findViewById(R.id.login);
         loginField.setTextColor(Color.WHITE);
@@ -174,6 +176,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if (changeLayout.getVisibility() == View.VISIBLE) {
             System.exit(0);
+            return;
+        }
+        if (imageView.getVisibility() == View.VISIBLE) {
+            imageView.setVisibility(View.INVISIBLE);
             return;
         }
         if (tabLayout.getVisibility() == View.VISIBLE) {
@@ -244,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
             File parentDir = directory.getParentFile();
             if (whatPath.equals("getChild") && parentDir != null) {
                 localFilesList.add(new FileAbout(parentDir));
-                localFilesList.get(0).setName(String.format("Родительская папка -> %s", parentDir.getName()));
+                localFilesList.get(0).setName(String.format(getString(R.string.parentFolder), parentDir.getName()));
                 rememberDirName = localFilesList.get(0).getName();
             }
             localFilesList.addAll(Files.list(Paths.get(directory.toString())).map(Path::toFile).sorted().map(FileAbout::new).collect(Collectors.toList()));
@@ -308,10 +314,103 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if (isFile) {
-            Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("*/*");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(directory + "/" + selectedFile)));
-            startActivity(shareIntent);
+            Uri pathToFile = Uri.fromFile(new File(directory + "/" + selectedFile));
+            try {
+                if (pathToFile.toString().endsWith(".jpg") || pathToFile.toString().endsWith(".jpeg")) {
+                    int galleryRequestCode = 41;
+                    Intent galleryIntent = new Intent(Intent.ACTION_VIEW);
+                    galleryIntent.setPackage("com.miui.gallery");
+                    galleryIntent.setDataAndTypeAndNormalize(pathToFile, "image/*");
+                    if (galleryIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(galleryIntent, galleryRequestCode);
+                    else {
+                        imageView.setVisibility(View.VISIBLE);
+                        imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), pathToFile));
+                    } return;
+                }
+                if (pathToFile.toString().endsWith(".mp4") || pathToFile.toString().endsWith(".avi")) {
+                    int vlcRequestCode = 42;
+                    Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
+                    vlcIntent.setPackage("org.videolan.vlc");
+                    vlcIntent.setDataAndTypeAndNormalize(pathToFile, "video/*");
+                    if (vlcIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(vlcIntent, vlcRequestCode);
+                    else {
+                        int galleryRequestCode = 41;
+                        Intent galleryIntent = new Intent(Intent.ACTION_VIEW);
+                        galleryIntent.setPackage("com.miui.gallery");
+                        galleryIntent.setDataAndTypeAndNormalize(pathToFile, "video/*");
+                        if (galleryIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(galleryIntent, galleryRequestCode);
+                        else {
+                            imageView.setVisibility(View.VISIBLE);
+                            imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), pathToFile));
+                        } return;
+                    }
+                } else {
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, pathToFile);
+                    startActivity(shareIntent);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void onClickFabGallery(View view) {
+        Intent getMiuiContent = new Intent(Intent.ACTION_GET_CONTENT);
+        getMiuiContent.setPackage("com.miui.gallery");
+        getMiuiContent.setType("*/*");
+        if (getMiuiContent.resolveActivity(getPackageManager()) != null)
+            startActivityForResult(Intent.createChooser(getMiuiContent, "Select Picture"), PICK_IMAGE);
+        else {
+            Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            getContentIntent.setType("*/*");
+            if (getContentIntent.resolveActivity(getPackageManager()) != null)
+                startActivityForResult(Intent.createChooser(getContentIntent, "Select Picture"), PICK_IMAGE);
+        }
+    }
+
+    private void onClickFabES(View view) {
+        Intent getEsContent = new Intent(Intent.ACTION_GET_CONTENT);
+        getEsContent.setPackage("com.estrongs.android.pop");
+        getEsContent.setType("*/*");
+        if (getEsContent.resolveActivity(getPackageManager()) != null)
+            startActivityForResult(Intent.createChooser(getEsContent, "Select Picture"), PICK_IMAGE);
+        else {
+            Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            getContentIntent.setType("*/*");
+            if (getContentIntent.resolveActivity(getPackageManager()) != null)
+                startActivityForResult(Intent.createChooser(getContentIntent, "Select Picture"), PICK_IMAGE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE) {
+            if (data != null) {
+                Uri uri = data.getData();
+                if (uri != null) fileService.sendFile(getRealPathFromUri(this, uri),"Not");
+                return;
+            }
+        }
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            // makeFolder();
+        }
+    }
+
+    public static String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
@@ -491,22 +590,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void serviceMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE) {
-            if (data != null) {
-                Uri uri = data.getData();
-                if (uri != null) fileService.sendFile(uri.getPath(),"Not");
-                // System.out.println(Paths.get(uri.getPath()));
-                return;
-            }
-        }
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            // makeFolder();
-        }
     }
 
     public boolean hasPermissions() {

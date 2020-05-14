@@ -38,13 +38,22 @@
     </androidx.viewpager.widget.ViewPager>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fabGallery"
         android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabES"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_input_get" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -68,5 +77,6 @@
     <include layout="@layout/content_change" />
     <include layout="@layout/content_register" />
     <include layout="@layout/content_login" />
+    <include layout="@layout/image_content" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

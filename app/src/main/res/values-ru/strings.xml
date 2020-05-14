@@ -25,4 +25,5 @@
     <string name="successSend">Успешно отправлено!</string>
     <string name="help">Отсюда отправить файл нельзя \nВыберите, например, \nфото или документ \nиз приложения \'Галерея\'</string>
     <string name="notSend">Отправить папку нельзя!</string>
+    <string name="parentFolder"><![CDATA[Родительская папка -> %s]]></string>
 </resources>
