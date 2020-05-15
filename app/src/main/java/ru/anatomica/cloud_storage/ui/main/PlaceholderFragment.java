@@ -50,11 +50,13 @@ public class PlaceholderFragment extends Fragment {
         if (pageViewModel.getIndex() == 2) {
             root = inflater.inflate(R.layout.cloud_content, container, false);
             MainActivity.cloudListView = root.findViewById(R.id.cloudListView);
+            MainActivity.cloudSizeView = root.findViewById(R.id.cloudSizeView);
 //            final TextView textView = root.findViewById(R.id.section_label);
 //            pageViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         } if (pageViewModel.getIndex() == 1) {
             root = inflater.inflate(R.layout.local_content, container, false);
             MainActivity.localListView = root.findViewById(R.id.localListView);
+            MainActivity.localSizeView = root.findViewById(R.id.localSizeView);
         }
         return root;
     }

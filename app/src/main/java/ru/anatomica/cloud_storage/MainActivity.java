@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<FileAbout> cloudFilesList;
     public static ListView localListView;
     public static ListView cloudListView;
+    public static ListView localSizeView;
+    public static ListView cloudSizeView;
     public static Context context;
 
     public AlertDialog.Builder alertDialog;
@@ -262,10 +264,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void reloadLocalTable() {
         List<String> localFileName = new ArrayList<>();
+        List<String> localSize = new ArrayList<>();
         for (int i = 0; i < localFilesList.size(); i++) {
-            String tmp = localFilesList.get(i).getName();
-            localFileName.add(tmp);
+            String name = localFilesList.get(i).getName();
+            String size = String.valueOf(localFilesList.get(i).getSize() / 1000000);
+            localFileName.add(name);
+            if (size.equals("0")) localSize.add("");
+            else localSize.add(size + " Мб");
         }
+        ArrayAdapter<String> localSizeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_expandable_list_item_1, localSize);
+        localSizeView.setAdapter(localSizeAdapter);
         ArrayAdapter<String> localAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_expandable_list_item_1, localFileName);
         localListView.setAdapter(localAdapter);
@@ -282,10 +291,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void reloadCloudTable() {
         List<String> cloudFileName = new ArrayList<>();
-        for(int i = 0; i < cloudFilesList.size(); i++) {
-            String tmp = cloudFilesList.get(i).getName();
-            cloudFileName.add(tmp);
+        List<String> cloudSize = new ArrayList<>();
+        for (int i = 0; i < cloudFilesList.size(); i++) {
+            String name = cloudFilesList.get(i).getName();
+            String size = String.valueOf(cloudFilesList.get(i).getSize() / 1000000);
+            cloudFileName.add(name);
+            if (size.equals("0")) cloudSize.add("");
+            else cloudSize.add(size + " Мб");
         }
+        ArrayAdapter<String> cloudSizeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_expandable_list_item_1, cloudSize);
+        cloudSizeView.setAdapter(cloudSizeAdapter);
         ArrayAdapter<String> cloudAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_expandable_list_item_1, cloudFileName);
         cloudListView.setAdapter(cloudAdapter);
