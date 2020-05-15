@@ -42,6 +42,7 @@ public class FileService {
         authOkCallback = () -> {
             mainActivity.runOnUiThread(this::loginToApp);
             mainActivity.saveLoginPass();
+            TimeUnit.MILLISECONDS.sleep(200);
             mainActivity.runOnUiThread(() -> mainActivity.refreshLocalFilesList("path"));
             TimeUnit.MILLISECONDS.sleep(200);
             mainActivity.runOnUiThread(() -> mainActivity.refreshCloudFilesList());
@@ -99,6 +100,8 @@ public class FileService {
                 if (download.equals("Download")) pathToFile = MainActivity.directory + "/" + fileName;
                 else if (fileName.startsWith("/storage")) pathToFile = fileName;
                 else if (fileName.startsWith("/external_files")) pathToFile = directory + fileName.substring(15);
+                else if (fileName.startsWith("content://com.estrongs.files")) pathToFile = fileName.substring(28);
+                else if (fileName.startsWith("file://")) pathToFile = fileName.substring(7);
                 else if (fileName.startsWith("/raw")) pathToFile = fileName.substring(4);
                 else {
                     messageToService(mainActivity.getString(R.string.help));

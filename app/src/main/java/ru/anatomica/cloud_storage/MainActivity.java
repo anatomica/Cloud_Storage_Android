@@ -390,8 +390,17 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE) {
             if (data != null) {
                 Uri uri = data.getData();
-                if (uri != null) fileService.sendFile(getRealPathFromUri(this, uri),"Not");
-                return;
+                String s = data.toString();
+                String pathToFile = s.substring(13, s.length() - 2);
+                if (uri != null) {
+                    if ((pathToFile.startsWith("content://com.estrongs.files/storage/")) || (pathToFile.startsWith("file://"))) {
+                        fileService.sendFile(pathToFile, "Not");
+                        return;
+                    } else {
+                        fileService.sendFile(getRealPathFromUri(this, uri), "Not");
+                        return;
+                    }
+                }
             }
         }
         if (requestCode == PERMISSION_REQUEST_CODE) {
