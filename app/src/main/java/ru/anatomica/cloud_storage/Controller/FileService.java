@@ -153,18 +153,18 @@ public class FileService {
 
     public void renameLocalFiles(String oldFilename) {
         alertDialog = new AlertDialog.Builder(mainActivity);
-        alertDialog.setTitle("Переименование файла ...");
-        alertDialog.setMessage("Введите новое имя:");
+        alertDialog.setTitle(R.string.renameTitle);
+        alertDialog.setMessage(R.string.enterName);
         final EditText input = new EditText(mainActivity);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
         alertDialog.setView(input);
-        alertDialog.setPositiveButton("Переименовать!", (dialog, which) -> {
+        alertDialog.setPositiveButton(R.string.rename, (dialog, which) -> {
             String newFileName = input.getText().toString();
-            if (newFileName.split("\\s+").length > 1) {
-                messageToService("Имя должно быть без пробелов!");
+            if (newFileName.split("\\s+").length > 10) {
+                messageToService(mainActivity.getString(R.string.withOut));
                 return;
             }
             if (newFileName.compareTo("") > 0 && !newFileName.equals("") && !newFileName.startsWith(" ") && newFileName != null) {
@@ -175,9 +175,9 @@ public class FileService {
                 }
                 if (MainActivity.directory.toString().endsWith("Download")) mainActivity.runOnUiThread(() -> mainActivity.refreshLocalFilesList("path"));
                 else mainActivity.runOnUiThread(() -> mainActivity.refreshLocalFilesList("getChild"));
-            } else messageToService("Пожалуйста, введите желаемое имя!");
+            } else messageToService(mainActivity.getString(R.string.whatName));
         });
-        alertDialog.setNegativeButton("Отмена!", (dialog, which) -> dialog.cancel());
+        alertDialog.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
         alertDialog.show();
     }
 

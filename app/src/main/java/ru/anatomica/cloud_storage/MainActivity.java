@@ -21,15 +21,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +43,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -86,10 +88,8 @@ public class MainActivity extends AppCompatActivity {
     public static File directory = new File(Environment.getExternalStorageDirectory(), "Download");
     public static ArrayList<FileAbout> localFilesList;
     public static ArrayList<FileAbout> cloudFilesList;
-    public static ListView localListView;
-    public static ListView cloudListView;
-    public static ListView localSizeView;
-    public static ListView cloudSizeView;
+    public static TableLayout localTableLayout;
+    public static TableLayout cloudTableLayout;
     public static Context context;
 
     public AlertDialog.Builder alertDialog;
@@ -263,53 +263,91 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void reloadLocalTable() {
-        List<String> localFileName = new ArrayList<>();
-        List<String> localSize = new ArrayList<>();
+        localTableLayout.removeAllViews();
         for (int i = 0; i < localFilesList.size(); i++) {
-            String name = localFilesList.get(i).getName();
-            String size = String.valueOf(localFilesList.get(i).getSize() / 1000000);
-            localFileName.add(name);
-            if (size.equals("0")) localSize.add("");
-            else localSize.add(size + " Мб");
+            int checkDirColor = 0;
+            TableRow tableRow = new TableRow(this);
+            TableRow.LayoutParams params;
+            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            tableRow.setGravity(Gravity.CENTER);
+            tableRow.setWeightSum(1f);
+
+            TextView name = new TextView(this);
+            params = new TableRow.LayoutParams(0, 150, 0.75f);
+            params.setMargins(60, 20,50, 20);
+            name.setText(localFilesList.get(i).getName());
+            name.setTextSize(TypedValue.TYPE_STRING,10);
+            name.setTextColor(Color.BLACK);
+            name.setGravity(Gravity.START | Gravity.CENTER);
+            if (new File(directory + "/" + localFilesList.get(i).getName()).isDirectory()) checkDirColor = 1;
+            name.setLayoutParams(params);
+
+            TextView size = new TextView(this);
+            params = new TableRow.LayoutParams(0, 150, 0.25f);
+            String sizeOfValue = String.valueOf(localFilesList.get(i).getSize() / 1000000);
+            if (sizeOfValue.equals("0")) size.setText("");
+            else size.setText(String.format("%s Мб", sizeOfValue));
+            if (checkDirColor == 1) {
+                size.setBackgroundColor(Color.rgb(235,235,235));
+                size.setText("   Папка");
+            }
+            size.setGravity(Gravity.START | Gravity.CENTER);
+            size.setLayoutParams(params);
+
+            tableRow.addView(name);
+            tableRow.addView(size);
+            tableRow.setClickable(true);
+            tableRow.setOnClickListener(v -> {
+                selectedFile = name.getText().toString();
+                workWithFileOrDir();
+            });
+            tableRow.setOnLongClickListener(v -> {
+                selectedFile = name.getText().toString();
+                localFileMenu();
+                return true;
+            });
+            localTableLayout.addView(tableRow);
         }
-        ArrayAdapter<String> localSizeAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_expandable_list_item_1, localSize);
-        localSizeView.setAdapter(localSizeAdapter);
-        ArrayAdapter<String> localAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_expandable_list_item_1, localFileName);
-        localListView.setAdapter(localAdapter);
-        localListView.setOnItemClickListener((parent, view, position, id) -> {
-            selectedFile = localListView.getAdapter().getItem(position).toString();
-            workWithFileOrDir();
-        });
-        localListView.setOnItemLongClickListener((parent, view, position, id) -> {
-            selectedFile = localListView.getAdapter().getItem(position).toString();
-            localFileMenu();
-            return true;
-        });
     }
 
     public void reloadCloudTable() {
-        List<String> cloudFileName = new ArrayList<>();
-        List<String> cloudSize = new ArrayList<>();
+        cloudTableLayout.removeAllViews();
         for (int i = 0; i < cloudFilesList.size(); i++) {
-            String name = cloudFilesList.get(i).getName();
-            String size = String.valueOf(cloudFilesList.get(i).getSize() / 1000000);
-            cloudFileName.add(name);
-            if (size.equals("0")) cloudSize.add("");
-            else cloudSize.add(size + " Мб");
+            TableRow tableRow = new TableRow(this);
+            TableRow.LayoutParams params;
+            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            tableRow.setGravity(Gravity.CENTER);
+            tableRow.setWeightSum(1f);
+
+            TextView name = new TextView(this);
+            params = new TableRow.LayoutParams(0, 150, 0.75f);
+            params.setMargins(60, 20,50, 20);
+            name.setText(cloudFilesList.get(i).getName());
+            name.setTextSize(TypedValue.TYPE_STRING,10);
+            name.setTextColor(Color.BLACK);
+            name.setLayoutParams(params);
+
+            TextView size = new TextView(this);
+            params = new TableRow.LayoutParams(0, 150, 0.25f);
+            String sizeOfValue = String.valueOf(cloudFilesList.get(i).getSize() / 1000000);
+            if (sizeOfValue.equals("0")) size.setText("");
+            else size.setText(String.format("%s Мб", sizeOfValue));
+            size.setLayoutParams(params);
+
+            tableRow.addView(name);
+            tableRow.addView(size);
+            tableRow.setClickable(true);
+            tableRow.setOnClickListener(v -> {
+                selectedFile = name.getText().toString();
+                // workWithFileOrDir();
+            });
+            tableRow.setOnLongClickListener(v -> {
+                selectedFile = name.getText().toString();
+                cloudFileMenu();
+                return true;
+            });
+            cloudTableLayout.addView(tableRow);
         }
-        ArrayAdapter<String> cloudSizeAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_expandable_list_item_1, cloudSize);
-        cloudSizeView.setAdapter(cloudSizeAdapter);
-        ArrayAdapter<String> cloudAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_expandable_list_item_1, cloudFileName);
-        cloudListView.setAdapter(cloudAdapter);
-        cloudListView.setOnItemLongClickListener((parent, view, position, id) -> {
-            selectedFile = cloudListView.getAdapter().getItem(position).toString();
-            cloudFileMenu();
-            return true;
-        });
     }
 
     private void workWithFileOrDir() {
@@ -429,6 +467,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             String[] proj = { MediaStore.Images.Media.DATA };
             cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            assert cursor != null;
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             return cursor.getString(column_index);

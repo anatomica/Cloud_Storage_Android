@@ -26,4 +26,9 @@
     <string name="help">You cannot send a file from here \nSelect, for example, \nphoto or a document \nfrom the application \'Gallery \'</string>
     <string name="notSend">You cannot send the folder!</string>
     <string name="parentFolder"><![CDATA[Parent Folder -> %s]]></string>
+    <string name="renameTitle">Rename file …</string>
+    <string name="enterName">Enter new name:</string>
+    <string name="rename">Rename</string>
+    <string name="withOut">The name must be without spaces!</string>
+    <string name="whatName">Please enter your desired name!</string>
 </resources>
