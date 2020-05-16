@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                         imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), pathToFile));
                     } return;
                 }
-                if (pathToFile.toString().endsWith(".mp4") || pathToFile.toString().endsWith(".avi")) {
+                else if (pathToFile.toString().endsWith(".mp4") || pathToFile.toString().endsWith(".avi")) {
                     int vlcRequestCode = 42;
                     Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
                     vlcIntent.setPackage("org.videolan.vlc");
@@ -395,6 +395,35 @@ public class MainActivity extends AppCompatActivity {
                         galleryIntent.setPackage("com.miui.gallery");
                         galleryIntent.setDataAndTypeAndNormalize(pathToFile, "video/*");
                         if (galleryIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(galleryIntent, galleryRequestCode);
+                        else {
+                            imageView.setVisibility(View.VISIBLE);
+                            imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), pathToFile));
+                        } return;
+                    }
+                }
+                else if (pathToFile.toString().endsWith(".doc") || pathToFile.toString().endsWith(".docx") || pathToFile.toString().endsWith(".xlsx")) {
+                    int galleryRequestCode = 43;
+                    Intent officeIntent = new Intent(Intent.ACTION_VIEW);
+                    officeIntent.setPackage("com.mobisystems.office");
+                    officeIntent.setDataAndTypeAndNormalize(pathToFile, "*/*");
+                    if (officeIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(officeIntent, galleryRequestCode);
+                    else {
+                        imageView.setVisibility(View.VISIBLE);
+                        imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), pathToFile));
+                    } return;
+                }
+                else if (pathToFile.toString().endsWith(".pdf")) {
+                    int vlcRequestCode = 44;
+                    Intent adobeIntent = new Intent(Intent.ACTION_VIEW);
+                    adobeIntent.setPackage("com.adobe.reader");
+                    adobeIntent.setDataAndTypeAndNormalize(pathToFile, "*/*");
+                    if (adobeIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(adobeIntent, vlcRequestCode);
+                    else {
+                        int galleryRequestCode = 43;
+                        Intent officeIntent = new Intent(Intent.ACTION_VIEW);
+                        officeIntent.setPackage("com.mobisystems.office");
+                        officeIntent.setDataAndTypeAndNormalize(pathToFile, "*/*");
+                        if (officeIntent.resolveActivity(getPackageManager()) != null) startActivityForResult(officeIntent, galleryRequestCode);
                         else {
                             imageView.setVisibility(View.VISIBLE);
                             imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), pathToFile));
