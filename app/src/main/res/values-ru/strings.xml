@@ -10,7 +10,7 @@
     <string name="registration">Регистрация</string>
     <string name="login">Вход</string>
     <string name="AboutApp">О приложении:</string>
-    <string name="Version">Версия 1.3 \nMaxim Fomin © 2019 – 2020 \nВсе права защищены.</string>
+    <string name="Version">Версия 1.4 \nMaxim Fomin © 2019 – 2020 \nВсе права защищены.</string>
     <string name="sendFile">Отправить / Скачать файл ?</string>
     <string name="renameFile">Переименовать файл ?</string>
     <string name="deleteFile">Удалить данный файл ?</string>
